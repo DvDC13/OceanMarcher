@@ -27,5 +27,4 @@ namespace Utils
     };
 
     inline Complex exp(const double theta);
-
 } // namespace Utils

@@ -10,7 +10,4 @@ namespace Ocean
     constexpr double windSpeed = 10.0;
     Utils::Vector3 windDirection(-1.0, -1.0, 0.0);
     constexpr double gravity = 9.81;
-
-    
-
 } // namespace Ocean
