@@ -2,6 +2,10 @@
 
 namespace Utils
 {
+    Complex::Complex()
+        : m_real(0.0), m_imaginary(0.0)
+    {}
+    
     Complex::Complex(double real, double imaginary)
         : m_real(real), m_imaginary(imaginary)
     {}
@@ -39,10 +43,4 @@ namespace Utils
     {
         return Complex(m_real / scalar, m_imaginary / scalar);
     }
-
-    Complex exp(const double theta)
-    {
-        return Complex(std::cos(theta), std::sin(theta));
-    }
-
 } // namespace Utils

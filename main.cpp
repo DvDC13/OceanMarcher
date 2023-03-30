@@ -1,7 +1,16 @@
 #include <iostream>
 
+#include "PhillipsSpectrum.h"
+
 int main()
 {
-    std::cout << "Hello World!" << std::endl;
-    return 0;
+    Ocean::generateSpectrum();
+    Ocean::updateHeights(0.0);
+
+    for (int i = 0; i < 50; i++)
+    {
+        std::cout << Ocean::heights[i] << "\t";
+    }
+
+    return EXIT_SUCCESS;
 }

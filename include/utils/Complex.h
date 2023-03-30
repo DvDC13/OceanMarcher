@@ -7,24 +7,28 @@ namespace Utils
     class Complex
     {
     public:
+        Complex();
         Complex(double real, double imaginary);
 
-        inline double getReal() const;
-        inline double getImaginary() const;
+        double getReal() const;
+        double getImaginary() const;
 
-        inline Complex operator+(const Complex& other) const;
-        inline Complex operator-(const Complex& other) const;
-        inline Complex operator*(const Complex& other) const;
+        Complex operator+(const Complex& other) const;
+        Complex operator-(const Complex& other) const;
+        Complex operator*(const Complex& other) const;
 
-        inline Complex conjugate() const;
+        Complex conjugate() const;
 
-        inline Complex operator*(double scalar) const;
-        inline Complex operator/(double scalar) const;
+        Complex operator*(double scalar) const;
+        Complex operator/(double scalar) const;
 
     private:
         double m_real;
         double m_imaginary;
     };
 
-    inline Complex exp(const double theta);
+    inline Complex exp(const double theta)
+    {
+        return Complex(std::cos(theta), std::sin(theta));
+    }
 } // namespace Utils
