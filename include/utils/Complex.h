@@ -10,8 +10,8 @@ namespace Utils
         Complex();
         Complex(double real, double imaginary);
 
-        double getReal() const;
-        double getImaginary() const;
+        inline double getReal() const { return m_real; }
+        inline double getImaginary() const { return m_imaginary; }
 
         Complex operator+(const Complex& other) const;
         Complex operator-(const Complex& other) const;

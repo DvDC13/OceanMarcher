@@ -34,7 +34,7 @@ namespace Ocean
         FFT(x, size);
 
         for (int i = 0; i < size; i++)
-            x[i] = x[i].conjugate() / size;
+            x[i] = x[i].conjugate();
     }
 
 } // namespace Ocean

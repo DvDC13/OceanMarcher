@@ -8,12 +8,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
                     ${CMAKE_CURRENT_SOURCE_DIR}/include/utils
-                    ${CMAKE_CURRENT_SOURCE_DIR}/include/compute)
+                    ${CMAKE_CURRENT_SOURCE_DIR}/include/compute
+                    ${CMAKE_CURRENT_SOURCE_DIR}/include/rendering)
 
 add_library("${PROJECT_NAME}_lib" STATIC)
 target_include_directories("${PROJECT_NAME}_lib" PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
                                                         ${CMAKE_CURRENT_SOURCE_DIR}/include/utils
-                                                        ${CMAKE_CURRENT_SOURCE_DIR}/include/compute)
+                                                        ${CMAKE_CURRENT_SOURCE_DIR}/include/compute
+                                                        ${CMAKE_CURRENT_SOURCE_DIR}/include/rendering)
 
 add_subdirectory(src)
 

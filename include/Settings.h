@@ -5,14 +5,13 @@
 
 namespace Settings
 {
-    static constexpr int SCREEN_WIDTH = 200;
-    static constexpr int SCREEN_HEIGHT = 100;
+    inline constexpr int SCREEN_WIDTH = 500;
+    inline constexpr int SCREEN_HEIGHT = 400;
 
-    static constexpr double windSpeed = 10.0;
-    static Utils::Vector2 windDirection(-1.0, -1.0);
-    static constexpr double gravity = 9.81;
+    inline constexpr double windSpeed = 3.5;    
+    inline Utils::Vector2 windDirection(-1.0, -1.0);
+    inline constexpr double gravity = 9.81;
 
-    static constexpr double Lx = 8.0;
-    static constexpr double Ly = 8.0;
-
+    inline constexpr double Lx = 8.0;
+    inline constexpr double Ly = 8.0;
 } // namespace Settings

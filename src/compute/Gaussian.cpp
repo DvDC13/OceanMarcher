@@ -2,6 +2,13 @@
 
 namespace Utils
 {
+    double Randomdouble()
+    {
+        static std::uniform_real_distribution<double> distribution(0.0f, 1.0f);
+        static std::mt19937 generator;
+        return distribution(generator);
+    }
+
     double GaussianNumber()
     {
         std::random_device rd;
