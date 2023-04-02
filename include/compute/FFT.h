@@ -4,6 +4,7 @@
 
 namespace Ocean
 {
-    void FFT(Utils::Complex *x, int N);
-    void IFFT(Utils::Complex *x, int N);
+    void FFT(Utils::Complex *x, int size);
+    void IFFT(Utils::Complex *x, int size);
+    void IFFT2D(Utils::Complex *x, int width, int height);
 }

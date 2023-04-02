@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <chrono>
 #include <algorithm>
 
 #include "Image.h"
@@ -27,41 +28,42 @@ Rendering::Pixel processImageColor(Utils::Color3& pixel_color, int samples_per_p
 
 int main()
 {
+    auto start = std::chrono::high_resolution_clock::now();
+
     Rendering::Image image(Settings::SCREEN_WIDTH, Settings::SCREEN_HEIGHT, 1);
 
     Ocean::generateSpectrum();
     Ocean::updateHeights(0.0);
 
-    for(int i = 0; i < 50; i++)
+    for (int j = image.getHeight() - 1; j >= 0; j--)
     {
-        std::cout << Ocean::heights[i] << '\t';
-    }
-
-    for (int i = 0; i < image.getHeight(); i++)
-    {
-        for (int j = 0; j < image.getWidth(); j++)
+        for (int i = 0; i < image.getWidth(); i++)
         {
             Utils::Color3 pixel_color(0.0, 0.0, 0.0);
 
             for (int k = 0; k < image.getSamplesPerPixel(); k++)
             {
-                double u = double(i + Utils::Randomdouble()) / (image.getWidth() - 1);
-                double v = double(j + Utils::Randomdouble()) / (image.getHeight() - 1);
+                // double u = double(i + Utils::Randomdouble()) / (image.getWidth() - 1);
+                // double v = double(j + Utils::Randomdouble()) / (image.getHeight() - 1);
                 
-                double grey = 0.05 * Ocean::heights[i * image.getWidth() + j] + 0.5;
+                double grey = 0.05 * Ocean::heights[j * image.getWidth() + i] + 0.5;
                 pixel_color += Utils::Color3(grey, grey, grey);
-            }    
+            }
 
             Rendering::Pixel pixel = processImageColor(pixel_color, image.getSamplesPerPixel());
-            image.setPixel(i, j, pixel);        
+            image.setPixel(i, j, pixel);
         }
     }
 
     image.savePPM("image.ppm");
 
-    std::free(Ocean::spectrumFreq);
-    std::free(Ocean::spectrumReel);
-    std::free(Ocean::heights);
+    delete[] Ocean::spectrumFreq;
+    delete[] Ocean::spectrumReel;
+    delete[] Ocean::heights;
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+    std::cout << "Elapsed time: " << elapsed.count() << " seconds." << std::endl;
 
     return EXIT_SUCCESS;
 }

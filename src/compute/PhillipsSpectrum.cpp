@@ -29,7 +29,6 @@ namespace Ocean
         return result * mulFactor;
     }
 
-
     void generateSpectrum()
     {
         int N = Settings::SCREEN_WIDTH;
@@ -56,23 +55,51 @@ namespace Ocean
         }
     }
 
+    Utils::Complex oppositeIndex(int i, int j, int width, int height)
+    {
+        Utils::Complex result = spectrumFreq[i * width + j];
+        if (i == 0 && j == 0) result = Ocean::spectrumFreq[width * height - 1];
+        if (i == 0 && j != 0) result = Ocean::spectrumFreq[width * (height - 1) + (width - j - 1)];
+        if (i != 0 && j == 0) result = Ocean::spectrumFreq[(height - i - 1) * width + (width - 1)];
+        if (i != 0 && j != 0) result = Ocean::spectrumFreq[(height - i) * width + (height - j)];
+        return result;
+    }
+
     void updateHeights(double t)
     {
+        // TODO: Implement this function
+        (void)(t);
+        
         int N = Settings::SCREEN_WIDTH;
         int M = Settings::SCREEN_HEIGHT;
-
-        for (int i = 0; i < N * M; i++)
-            spectrumReel[i] = spectrumFreq[i];
-
-        Ocean::IFFT(spectrumReel, M);
 
         for (int i = 0; i < M; i++)
         {
             for (int j = 0; j < N; j++)
             {
                 int index = i * N + j;
+                Utils::Complex h = spectrumFreq[index];
+                Utils::Complex opposite = oppositeIndex(i, j, N, M);
+                Utils::Complex conj = opposite.conjugate();
+
+                Utils::Complex result = h + conj;
+                spectrumReel[index] = result;
+            }
+        }
+
+        Ocean::IFFT2D(spectrumReel, N, M);
+
+        for (int i = 0; i < M; i++)
+        {
+            for (int j = 0; j < N; j++)
+            {
+                int index = i * N + j;
+
+                double sign = (i + j) % 2 == 0 ? 1.0 : -1.0;
+
                 double h = spectrumReel[index].getReal();
-                heights[index] = h;
+
+                heights[index] = sign * h;
             }
         }
     }
