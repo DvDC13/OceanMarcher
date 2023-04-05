@@ -4,6 +4,8 @@ project(OceanTracer)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+find_package(Boost 1.74.0 REQUIRED COMPONENTS program_options)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -std=c++20 -fsanitize=address -g")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -21,4 +23,4 @@ add_subdirectory(src)
 
 add_executable(${PROJECT_NAME} main.cpp)
 
-target_link_libraries(${PROJECT_NAME} "${PROJECT_NAME}_lib")
+target_link_libraries(${PROJECT_NAME} "${PROJECT_NAME}_lib" ${Boost_LIBRARIES})

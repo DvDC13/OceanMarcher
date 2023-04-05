@@ -3,6 +3,7 @@
 #include <chrono>
 #include <algorithm>
 
+#include "CommandLineOptions.h"
 #include "Image.h"
 #include "PhillipsSpectrum.h"
 
@@ -26,45 +27,58 @@ Rendering::Pixel processImageColor(Utils::Color3& pixel_color, int samples_per_p
     return pixel;
 }
 
-int main()
+int main(int argc, char** argv)
 {
+    Utils::CommandLineOptions options;
+    Utils::CommandLineOptions::Status status = options.parse(argc, argv);
+
+    if (status == Utils::CommandLineOptions::Status::HELP) { return EXIT_SUCCESS; }
+    if (status == Utils::CommandLineOptions::Status::VERSION) { return EXIT_SUCCESS; }
+
     auto start = std::chrono::high_resolution_clock::now();
 
     Rendering::Image image(Settings::SCREEN_WIDTH, Settings::SCREEN_HEIGHT, 1);
 
     Ocean::generateSpectrum();
-    Ocean::updateHeights(0.0);
 
-    for (int j = image.getHeight() - 1; j >= 0; j--)
+    for (int t = 0; t < Settings::NUM_FRAMES; t++)
     {
-        for (int i = 0; i < image.getWidth(); i++)
+        std::cout << "Frame " << t << std::endl;
+
+        Ocean::updateHeights(t * 0.04);
+
+        for (int j = image.getHeight() - 1; j >= 0; j--)
         {
-            Utils::Color3 pixel_color(0.0, 0.0, 0.0);
-
-            for (int k = 0; k < image.getSamplesPerPixel(); k++)
+            for (int i = 0; i < image.getWidth(); i++)
             {
-                // double u = double(i + Utils::Randomdouble()) / (image.getWidth() - 1);
-                // double v = double(j + Utils::Randomdouble()) / (image.getHeight() - 1);
-                
-                // Binary
-                // double grey = (Ocean::heights[j * image.getWidth() + i] + 1.0) / 2.0;
+                Utils::Color3 pixel_color(0.0, 0.0, 0.0);
 
-                // Grayscale
-                double grey = (Ocean::heights[j * image.getWidth() + i] - Ocean::minValue) / (Ocean::maxValue - Ocean::minValue);
+                for (int k = 0; k < image.getSamplesPerPixel(); k++)
+                {
+                    // double u = double(i + Utils::Randomdouble()) / (image.getWidth() - 1);
+                    // double v = double(j + Utils::Randomdouble()) / (image.getHeight() - 1);
 
-                pixel_color += Utils::Color3(grey, grey, grey);
+                    // Grayscale
+                    double grey = (Ocean::heights[j * image.getWidth() + i] - Ocean::minValue) / (Ocean::maxValue - Ocean::minValue);
+
+                    pixel_color += Utils::Color3(grey, grey, grey);
+                }
+
+                Rendering::Pixel pixel = processImageColor(pixel_color, image.getSamplesPerPixel());
+                image.setPixel(i, j, pixel);
             }
-
-            Rendering::Pixel pixel = processImageColor(pixel_color, image.getSamplesPerPixel());
-            image.setPixel(i, j, pixel);
         }
+
+        std::string path = "output/frame_" + std::to_string(t) + ".ppm";
+        image.savePPM(path);
     }
 
-    image.savePPM("image.ppm");
+    system("ffmpeg -y -i output/frame_%d.ppm output/ocean.mp4");
 
     delete[] Ocean::spectrumFreq;
     delete[] Ocean::spectrumReel;
     delete[] Ocean::heights;
+    delete[] Ocean::pulsations;
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end - start;

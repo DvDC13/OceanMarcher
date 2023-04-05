@@ -51,6 +51,8 @@ namespace Ocean
                 double ei = Utils::GaussianNumber();
 
                 spectrumFreq[index] = Utils::Complex(phk * er, phk * ei);
+
+                pulsations[index] = std::sqrt(Settings::gravity * length(k));
             }
         }
     }
@@ -66,10 +68,7 @@ namespace Ocean
     }
 
     void updateHeights(double t)
-    {
-        // TODO: Implement this function
-        (void)(t);
-        
+    {   
         int N = Settings::SCREEN_WIDTH;
         int M = Settings::SCREEN_HEIGHT;
 
@@ -81,11 +80,13 @@ namespace Ocean
             for (int j = 0; j < N; j++)
             {
                 int index = i * N + j;
+
                 Utils::Complex h = spectrumFreq[index];
                 Utils::Complex opposite = oppositeIndex(i, j, N, M);
                 Utils::Complex conj = opposite.conjugate();
 
-                Utils::Complex result = h + conj;
+                double wt = pulsations[index] * t;
+                Utils::Complex result = h * Utils::exp(wt) + conj * Utils::exp(-wt);
                 spectrumReel[index] = result;
             }
         }
