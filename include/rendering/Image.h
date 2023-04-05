@@ -7,7 +7,6 @@
 
 namespace Rendering
 {
-
     class Pixel
     {
     public:

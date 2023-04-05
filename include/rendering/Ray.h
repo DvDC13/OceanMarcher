@@ -13,6 +13,7 @@ namespace Rendering
         inline const Utils::Vector3& getDirection() const { return m_direction; }
 
         Utils::Vector3 getPointAt(double t) const;
+
     private:
         Utils::Vector3 m_origin;
         Utils::Vector3 m_direction;

@@ -6,4 +6,9 @@ target_sources("${PROJECT_NAME}_lib" PRIVATE
     "compute/FFT.cpp"
     "compute/Gaussian.cpp"
     "compute/PhillipsSpectrum.cpp"
-    "rendering/Image.cpp")
+    "rendering/Image.cpp"
+    "rendering/Ray.cpp"
+    "rendering/Camera.cpp"
+    "rendering/Object.cpp"
+    "rendering/Scene.cpp"
+    "rendering/Texture.cpp")
