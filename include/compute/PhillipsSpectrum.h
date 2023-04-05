@@ -15,6 +15,9 @@ namespace Ocean
 
     inline double* heights = new double[Settings::SCREEN_HEIGHT * Settings::SCREEN_WIDTH];
 
+    inline double minValue;
+    inline double maxValue;
+
     double generateCoefficient(const Utils::Vector2& k);
 
     void generateSpectrum();

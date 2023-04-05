@@ -73,6 +73,9 @@ namespace Ocean
         int N = Settings::SCREEN_WIDTH;
         int M = Settings::SCREEN_HEIGHT;
 
+        minValue = 0.0;
+        maxValue = 0.0;
+
         for (int i = 0; i < M; i++)
         {
             for (int j = 0; j < N; j++)
@@ -100,6 +103,9 @@ namespace Ocean
                 double h = spectrumReel[index].getReal();
 
                 heights[index] = sign * h;
+
+                if (h < minValue) minValue = h;
+                if (h > maxValue) maxValue = h;
             }
         }
     }

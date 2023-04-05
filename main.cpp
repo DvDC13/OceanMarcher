@@ -18,9 +18,9 @@ Rendering::Pixel processImageColor(Utils::Color3& pixel_color, int samples_per_p
     g = sqrt(g * scale);
     b = sqrt(b * scale);
 
-    int ir = static_cast<int>(256 * std::clamp(r, 0.0, 0.999));
-    int ig = static_cast<int>(256 * std::clamp(g, 0.0, 0.999));
-    int ib = static_cast<int>(256 * std::clamp(b, 0.0, 0.999));
+    int ir = std::min(255.0, std::max(0.0, r * 255.99));
+    int ig = std::min(255.0, std::max(0.0, g * 255.99));
+    int ib = std::min(255.0, std::max(0.0, b * 255.99));
 
     Rendering::Pixel pixel(ir, ig, ib);
     return pixel;
@@ -46,7 +46,12 @@ int main()
                 // double u = double(i + Utils::Randomdouble()) / (image.getWidth() - 1);
                 // double v = double(j + Utils::Randomdouble()) / (image.getHeight() - 1);
                 
-                double grey = 0.05 * Ocean::heights[j * image.getWidth() + i] + 0.5;
+                // Binary
+                // double grey = (Ocean::heights[j * image.getWidth() + i] + 1.0) / 2.0;
+
+                // Grayscale
+                double grey = (Ocean::heights[j * image.getWidth() + i] - Ocean::minValue) / (Ocean::maxValue - Ocean::minValue);
+
                 pixel_color += Utils::Color3(grey, grey, grey);
             }
 

@@ -12,7 +12,7 @@ namespace Rendering
     {
     public:
         Pixel() : r(0), g(0), b(0) {}
-        Pixel(int red, int green, int blue) : r(red), g(green), b(blue) {}
+        Pixel(int r, int g, int b) : r(r), g(g), b(b) {}
 
         int r;
         int g;
@@ -31,7 +31,7 @@ namespace Rendering
         Pixel getPixel(int x, int y) const;
 
         void setPixel(int x, int y, const Pixel& pixel);
-        void savePPM(const std::string& path) const;
+        void savePPM(const std::string& path, bool binary_output = true) const;
 
     private:
         int m_width;
