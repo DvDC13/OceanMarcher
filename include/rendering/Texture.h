@@ -5,7 +5,7 @@
 
 namespace Rendering
 {
-    struct Intersection_data;
+    struct Intersection_record;
 
     class Texture
     {
@@ -13,7 +13,7 @@ namespace Rendering
         virtual ~Texture() = default;
 
         virtual bool getTextureAt(const Rendering::Ray& ray_in,
-            const Rendering::Intersection_data& record,
+            const Rendering::Intersection_record& record,
             Utils::Color3& color,
             Rendering::Ray& ray_out,
             double& diffuse,

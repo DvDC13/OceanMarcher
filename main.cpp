@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <algorithm>
+#include <limits>
 
 #include "CommandLineOptions.h"
 #include "Image.h"
@@ -15,7 +16,26 @@ Utils::Color3 ray_cast(const Rendering::Ray& ray, const Rendering::Scene& world,
     // double grey = (Ocean::heights[j * image.getWidth() + i] - Ocean::minValue) / (Ocean::maxValue - Ocean::minValue);
     //pixel_color += Utils::Color3(grey, grey, grey);
 
-    return Utils::Color3(0.0, 0.0, 0.0);
+    if (limit <= 0) { return Utils::Color3(0.0, 0.0, 0.0); }
+
+    Rendering::Intersection_record record;
+
+    if (world.intersects(ray, 0.001, std::numeric_limits<double>::infinity(), record))
+    {
+        return 0.5 * Utils::Color3(record.normal.getX() + 1, record.normal.getY() + 1, record.normal.getZ() + 1);
+    }
+    else
+    {
+        Utils::Vector3 unit_direction = Utils::normalize(ray.getDirection());
+        double t = (std::sqrt(unit_direction.getY()));
+        Utils::Color3 Sky = (1.0 - t) * Utils::Color3(1.0, 0.5, 0.0) + t * Utils::Color3(0.4, 0.75, 1.0);
+        
+        Utils::Color3 SunColor = Utils::Color3(1.0, 1.0, 0.7);
+        Utils::Vector3 sunDirection = Utils::normalize(Utils::Vector3(2.0, 0.0, 10.0));
+        double SunIntensity = std::pow(Utils::dot(unit_direction, sunDirection), 250.0);
+        Utils::Color3 Sun = SunIntensity * SunColor;
+        return Sky + Sun;
+    }
 }
 
 Rendering::Pixel processImageColor(Utils::Color3& pixel_color, int samples_per_pixel)
@@ -53,7 +73,7 @@ void render(Rendering::Image& image, const Rendering::Scene& world)
                 double v = double(j + Utils::Randomdouble()) / (image.getHeight() - 1);
 
                 Rendering::Ray ray = world.getCamera().getRay(u, v);
-                pixel_color += ray_cast(ray, world, 50);
+                pixel_color += ray_cast(ray, world, 1);
             }
 
             Rendering::Pixel pixel = processImageColor(pixel_color, image.getSamplesPerPixel());
@@ -76,8 +96,8 @@ int main(int argc, char** argv)
 
     std::vector<std::shared_ptr<Rendering::Object>> objects;
     Rendering::Scene world(objects);
-    Rendering::Sphere sphere(Utils::Point3(0.0, 0.0, -1.0), 0.5);
-    world.addObject(std::make_shared<Rendering::Sphere>(sphere));
+    //Rendering::Sphere sphere(Utils::Point3(0.0, 0.0, 0.0), 0.5);
+    //world.addObject(std::make_shared<Rendering::Sphere>(sphere));
 
     Ocean::generateSpectrum();
 

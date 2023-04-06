@@ -7,7 +7,7 @@ namespace Rendering
         , m_radius(radius)
     {}
 
-    bool Sphere::intersects(const Ray& ray, double t_min, double t_max, Intersection_data& record) const
+    bool Sphere::intersects(const Ray& ray, double t_min, double t_max, Intersection_record& record) const
     {
         Utils::Vector3 oc = ray.getOrigin() - m_center;
         double a = Utils::lengthSquared(ray.getDirection());
@@ -34,7 +34,7 @@ namespace Rendering
         return true;
     }
 
-    Utils::Vector3 Sphere::getNormalAt(const Utils::Point3& point, const Ray& ray, Intersection_data& record) const
+    Utils::Vector3 Sphere::getNormalAt(const Utils::Point3& point, const Ray& ray, Intersection_record& record) const
     {
         Utils::Vector3 outward_normal = Utils::normalize(point - m_center);
         record.setFaceNormal(ray, outward_normal);

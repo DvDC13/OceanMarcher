@@ -23,9 +23,9 @@ namespace Rendering
         m_objects.clear();
     }
 
-    bool Scene::intersects(const Ray& ray, double t_min, double t_max, Intersection_data& record) const
+    bool Scene::intersects(const Ray& ray, double t_min, double t_max, Intersection_record& record) const
     {
-        Intersection_data tmp_record;
+        Intersection_record tmp_record;
         bool hit = false;
         double closest_so_far = t_max;
 
@@ -42,8 +42,11 @@ namespace Rendering
         return hit;
     }
 
-    Utils::Vector3 Scene::getNormalAt(const Utils::Point3& point, const Ray& ray, Intersection_data& record) const
+    Utils::Vector3 Scene::getNormalAt(const Utils::Point3& point, const Ray& ray, Intersection_record& record) const
     {
+        (void)point;
+        (void)ray;
+        (void)record;
         std::cerr << "Scene::getNormalAt() called!" << std::endl;
         return Utils::Vector3(0.0, 0.0, 0.0);
     }
