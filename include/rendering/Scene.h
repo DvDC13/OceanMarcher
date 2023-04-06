@@ -9,7 +9,7 @@
 
 namespace Rendering
 {
-    class Scene : public Object
+    class Scene
     {
     public:
         Scene(const std::vector<std::shared_ptr<Object>>& objects);
@@ -19,10 +19,7 @@ namespace Rendering
 
         inline const std::vector<std::shared_ptr<Object>>& getObjects() const { return m_objects; }
         inline const Camera& getCamera() const { return m_camera; }
-
-        virtual bool intersects(const Ray& ray, double t_min, double t_max, Intersection_record& record) const override;
-        virtual Utils::Vector3 getNormalAt(const Utils::Point3& point, const Ray& ray, Intersection_record& record) const override;
-
+        
     private:
         std::vector<std::shared_ptr<Object>> m_objects;
         Camera m_camera;

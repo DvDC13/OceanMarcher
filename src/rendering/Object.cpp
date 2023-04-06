@@ -4,38 +4,14 @@
 
 namespace Rendering
 {
-    Sphere::Sphere(const Utils::Vector3& center, double radius, std::shared_ptr<Texture> texture)
+    Sphere::Sphere(const Utils::Vector3& center, double radius)
         : m_center(center)
         , m_radius(radius)
-        , m_texture(texture)
     {}
 
-    bool Sphere::intersects(const Ray& ray, double t_min, double t_max, Intersection_record& record) const
+    double Sphere::getDistance(const Utils::Point3& point) const
     {
-        Utils::Vector3 oc = ray.getOrigin() - m_center;
-        double a = Utils::lengthSquared(ray.getDirection());
-        double half_b = Utils::dot(oc, ray.getDirection());
-        double c = Utils::lengthSquared(oc) - m_radius * m_radius;
-        double delta = half_b * half_b - a * c;
-
-        if (delta < 0) return false;
-
-        double sqrtd = std::sqrt(delta);
-        double root = (-half_b - sqrtd) / a;
-
-        if (root < t_min || t_max < root)
-        {
-            root = (-half_b + sqrtd) / a;
-            if (root < t_min || t_max < root)
-                return false;
-        }
-
-        record.t = root;
-        record.point = ray.getPointAt(record.t);
-        record.normal = getNormalAt(record.point, ray, record);
-        record.texture = m_texture;
-
-        return true;
+        return Utils::length(point - m_center) - m_radius;
     }
 
     Utils::Vector3 Sphere::getNormalAt(const Utils::Point3& point, const Ray& ray, Intersection_record& record) const

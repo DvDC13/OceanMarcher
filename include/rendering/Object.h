@@ -5,8 +5,6 @@
 
 namespace Rendering
 {
-    class Texture;
-
     struct Intersection_record
     {
         Utils::Point3 point;
@@ -20,8 +18,6 @@ namespace Rendering
             front_face = Utils::dot(ray.getDirection(), outward_normal) < 0;
             normal = front_face ? outward_normal : -outward_normal;
         }
-
-        std::shared_ptr<Texture> texture;
     };
 
     class Object
@@ -30,7 +26,7 @@ namespace Rendering
         Object() = default;
         virtual ~Object() = default;
 
-        virtual bool intersects(const Ray& ray, double t_min, double t_max, Intersection_record& record) const = 0;
+        virtual double getDistance(const Utils::Point3& point) const = 0;
 
         virtual Utils::Vector3 getNormalAt(const Utils::Point3& point, const Ray& ray, Intersection_record& record) const = 0;
     };
@@ -38,15 +34,14 @@ namespace Rendering
     class Sphere : public Object
     {
     public:
-        Sphere(const Utils::Point3& center, double radius, std::shared_ptr<Texture> texture);
+        Sphere(const Utils::Point3& center, double radius);
 
-        virtual bool intersects(const Ray& ray, double t_min, double t_max, Intersection_record& record) const override;
+        virtual double getDistance(const Utils::Point3& point) const override;
 
         virtual Utils::Vector3 getNormalAt(const Utils::Point3& point, const Ray& ray, Intersection_record& record) const override;
 
     private:
         Utils::Point3 m_center;
         double m_radius;
-        std::shared_ptr<Texture> m_texture;
     };
 }

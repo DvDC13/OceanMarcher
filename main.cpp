@@ -11,22 +11,62 @@
 #include "Texture.h"
 #include "PhillipsSpectrum.h"
 
+const double precision = 255.0;
+
+bool intersects(const Rendering::Ray& ray, const auto& object, Rendering::Intersection_record& record, double closest_so_far)
+{
+    double distanceFromOrigin = 0.0;
+    for (double p = 0; p < precision; p++)
+    {
+        Utils::Point3 hitPoint = ray.getPointAt(distanceFromOrigin);
+        double distanceFromObject = object->getDistance(hitPoint);
+
+        if (distanceFromObject < 0.001)
+        {
+            if (distanceFromOrigin >= closest_so_far) return false;
+
+            record.point = hitPoint;
+            record.t = distanceFromOrigin;
+            object->getNormalAt(hitPoint, ray, record);
+
+            return true;
+        }
+
+        if (distanceFromOrigin > 1000) return false;
+
+        distanceFromOrigin += distanceFromObject;
+    }
+
+    return false;
+}
+
 Utils::Color3 ray_cast(const Rendering::Ray& ray, const Rendering::Scene& world, int limit)
 {
     // Grayscale
     // double grey = (Ocean::heights[j * image.getWidth() + i] - Ocean::minValue) / (Ocean::maxValue - Ocean::minValue);
-    //pixel_color += Utils::Color3(grey, grey, grey);
+    // pixel_color += Utils::Color3(grey, grey, grey);
 
     if (limit <= 0) { return Utils::Color3(0.0, 0.0, 0.0); }
 
     Rendering::Intersection_record record;
 
-    if (world.intersects(ray, 0.001, std::numeric_limits<double>::infinity(), record))
+    bool hit_anything = false;
+    double closest_so_far = std::numeric_limits<double>::max();
+    Rendering::Intersection_record tmp_record;
+
+    for (const auto& object : world.getObjects())
     {
-        Rendering::Ray ray_out;
-        Utils::Color3 color;
-        double diffuse;
-        double specular;
+        if (intersects(ray, object, record, closest_so_far))
+        {
+            hit_anything = true;
+            closest_so_far = record.t;
+            tmp_record = record;
+        }
+    }
+
+    if (hit_anything)
+    {
+        return Utils::Color3(0.0, 0.0, 0.0);
     }
     else
     {
@@ -103,7 +143,7 @@ int main(int argc, char** argv)
 
     auto materialUniform = std::make_shared<Rendering::UniformTexture>(Utils::Color3(0.5, 0.5, 0.5), 0.5, 0.5);
     auto materialMirror = std::make_shared<Rendering::MirrorTexture>(Utils::Color3(0.5, 0.5, 0.5));
-    Rendering::Sphere sphere(Utils::Point3(0.0, 0.0, 0.0), 0.5, materialMirror);
+    Rendering::Sphere sphere(Utils::Point3(0.0, 0.0, 0.0), 0.5);
     world.addObject(std::make_shared<Rendering::Sphere>(sphere));
 
     Ocean::generateSpectrum();
