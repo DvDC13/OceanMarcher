@@ -62,6 +62,34 @@ namespace Utils
         return v / length(v);
     }
 
+    inline Vector3 reflect(const Vector3& v, const Vector3& n)
+    {
+        return v - 2 * dot(v, n) * n;
+    }
+
+    inline static Vector3 random(double min, double max)
+    {
+        return Vector3(min + (max - min) * rand() / (RAND_MAX + 1.0),
+                       min + (max - min) * rand() / (RAND_MAX + 1.0),
+                       min + (max - min) * rand() / (RAND_MAX + 1.0));
+    }
+
+    inline static Vector3 randomInUnit()
+    {
+        while (true)
+        {
+            Vector3 p = random(-1, 1);
+            if (lengthSquared(p) >= 1) continue;
+            return p;
+        }
+    }
+
+    inline bool nearZero(const Vector3& v)
+    {
+        const double s = 1e-8;
+        return (std::abs(v.getX()) < s) && (std::abs(v.getY()) < s) && (std::abs(v.getZ()) < s);
+    }
+
     using Point3 = Vector3;
     using Color3 = Vector3;
 } // namespace Utils

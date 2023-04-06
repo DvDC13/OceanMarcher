@@ -8,6 +8,7 @@
 #include "Image.h"
 #include "Ray.h"
 #include "Scene.h"
+#include "Texture.h"
 #include "PhillipsSpectrum.h"
 
 Utils::Color3 ray_cast(const Rendering::Ray& ray, const Rendering::Scene& world, int limit)
@@ -22,7 +23,10 @@ Utils::Color3 ray_cast(const Rendering::Ray& ray, const Rendering::Scene& world,
 
     if (world.intersects(ray, 0.001, std::numeric_limits<double>::infinity(), record))
     {
-        return 0.5 * Utils::Color3(record.normal.getX() + 1, record.normal.getY() + 1, record.normal.getZ() + 1);
+        Rendering::Ray ray_out;
+        Utils::Color3 color;
+        double diffuse;
+        double specular;
     }
     else
     {
@@ -96,8 +100,11 @@ int main(int argc, char** argv)
 
     std::vector<std::shared_ptr<Rendering::Object>> objects;
     Rendering::Scene world(objects);
-    //Rendering::Sphere sphere(Utils::Point3(0.0, 0.0, 0.0), 0.5);
-    //world.addObject(std::make_shared<Rendering::Sphere>(sphere));
+
+    auto materialUniform = std::make_shared<Rendering::UniformTexture>(Utils::Color3(0.5, 0.5, 0.5), 0.5, 0.5);
+    auto materialMirror = std::make_shared<Rendering::MirrorTexture>(Utils::Color3(0.5, 0.5, 0.5));
+    Rendering::Sphere sphere(Utils::Point3(0.0, 0.0, 0.0), 0.5, materialMirror);
+    world.addObject(std::make_shared<Rendering::Sphere>(sphere));
 
     Ocean::generateSpectrum();
 

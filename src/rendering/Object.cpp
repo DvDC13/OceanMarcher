@@ -1,10 +1,13 @@
 #include "Object.h"
 
+#include "Texture.h"
+
 namespace Rendering
 {
-    Sphere::Sphere(const Utils::Vector3& center, double radius)
+    Sphere::Sphere(const Utils::Vector3& center, double radius, std::shared_ptr<Texture> texture)
         : m_center(center)
         , m_radius(radius)
+        , m_texture(texture)
     {}
 
     bool Sphere::intersects(const Ray& ray, double t_min, double t_max, Intersection_record& record) const
@@ -30,6 +33,7 @@ namespace Rendering
         record.t = root;
         record.point = ray.getPointAt(record.t);
         record.normal = getNormalAt(record.point, ray, record);
+        record.texture = m_texture;
 
         return true;
     }

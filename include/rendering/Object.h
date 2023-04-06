@@ -2,7 +2,6 @@
 
 #include "Vector3.h"
 #include "Ray.h"
-#include "Texture.h"
 
 namespace Rendering
 {
@@ -22,7 +21,7 @@ namespace Rendering
             normal = front_face ? outward_normal : -outward_normal;
         }
 
-        // add texture
+        std::shared_ptr<Texture> texture;
     };
 
     class Object
@@ -39,7 +38,7 @@ namespace Rendering
     class Sphere : public Object
     {
     public:
-        Sphere(const Utils::Point3& center, double radius);
+        Sphere(const Utils::Point3& center, double radius, std::shared_ptr<Texture> texture);
 
         virtual bool intersects(const Ray& ray, double t_min, double t_max, Intersection_record& record) const override;
 
@@ -48,7 +47,6 @@ namespace Rendering
     private:
         Utils::Point3 m_center;
         double m_radius;
-
-        // add material
+        std::shared_ptr<Texture> m_texture;
     };
 }

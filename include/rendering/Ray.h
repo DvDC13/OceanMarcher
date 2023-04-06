@@ -7,6 +7,7 @@ namespace Rendering
     class Ray
     {
     public:
+        Ray() = default;
         Ray(const Utils::Vector3& origin, const Utils::Vector3& direction);
 
         inline const Utils::Vector3& getOrigin() const { return m_origin; }
