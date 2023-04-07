@@ -66,7 +66,7 @@ Utils::Color3 ray_cast(const Rendering::Ray& ray, const Rendering::Scene& world,
 
     if (hit_anything)
     {
-        return Utils::Color3(0.0, 0.0, 0.0);
+        return 0.5 * Utils::Color3(tmp_record.normal.getX() + 1, tmp_record.normal.getY() + 1, tmp_record.normal.getZ() + 1);
     }
     else
     {
@@ -143,8 +143,8 @@ int main(int argc, char** argv)
 
     auto materialUniform = std::make_shared<Rendering::UniformTexture>(Utils::Color3(0.5, 0.5, 0.5), 0.5, 0.5);
     auto materialMirror = std::make_shared<Rendering::MirrorTexture>(Utils::Color3(0.5, 0.5, 0.5));
-    Rendering::Sphere sphere(Utils::Point3(0.0, 0.0, 0.0), 0.5);
-    world.addObject(std::make_shared<Rendering::Sphere>(sphere));
+    //Rendering::Sphere sphere(Utils::Point3(0.0, 0.0, 0.0), 0.5);
+    //world.addObject(std::make_shared<Rendering::Sphere>(sphere));
 
     Ocean::generateSpectrum();
 
