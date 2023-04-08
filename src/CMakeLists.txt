@@ -11,4 +11,4 @@ target_sources("${PROJECT_NAME}_lib" PRIVATE
     "rendering/Camera.cpp"
     "rendering/Object.cpp"
     "rendering/Scene.cpp"
-    "rendering/Texture.cpp")
+    "rendering/Hit.cpp")

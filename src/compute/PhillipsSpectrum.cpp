@@ -86,7 +86,9 @@ namespace Ocean
                 Utils::Complex conj = opposite.conjugate();
 
                 double wt = pulsations[index] * t;
+
                 Utils::Complex result = h * Utils::exp(wt) + conj * Utils::exp(-wt);
+
                 spectrumReel[index] = result;
             }
         }
@@ -110,5 +112,4 @@ namespace Ocean
             }
         }
     }
-
 } // namespace Ocean

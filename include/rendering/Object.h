@@ -2,6 +2,7 @@
 
 #include "Vector3.h"
 #include "Ray.h"
+#include "PhillipsSpectrum.h"
 
 namespace Rendering
 {
@@ -43,5 +44,18 @@ namespace Rendering
     private:
         Utils::Point3 m_center;
         double m_radius;
+    };
+
+    class Water : public Object
+    {
+    public:
+        Water() = default;
+
+        virtual double getDistance(const Utils::Point3& point) const override;
+
+        virtual Utils::Vector3 getNormalAt(const Utils::Point3& point, const Ray& ray, Intersection_record& record) const override;
+
+    private:
+        double bilinearInterpolation(double x, double y) const;
     };
 }

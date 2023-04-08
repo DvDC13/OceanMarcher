@@ -31,4 +31,9 @@ namespace Utils
     {
         return Complex(std::cos(theta), std::sin(theta));
     }
+
+    inline Complex operator*(double scalar, const Complex& complex)
+    {
+        return complex * scalar;
+    }
 } // namespace Utils

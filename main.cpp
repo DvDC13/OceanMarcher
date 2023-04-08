@@ -8,37 +8,8 @@
 #include "Image.h"
 #include "Ray.h"
 #include "Scene.h"
-#include "Texture.h"
+#include "Hit.h"
 #include "PhillipsSpectrum.h"
-
-const double precision = 255.0;
-
-bool intersects(const Rendering::Ray& ray, const auto& object, Rendering::Intersection_record& record, double closest_so_far)
-{
-    double distanceFromOrigin = 0.0;
-    for (double p = 0; p < precision; p++)
-    {
-        Utils::Point3 hitPoint = ray.getPointAt(distanceFromOrigin);
-        double distanceFromObject = object->getDistance(hitPoint);
-
-        if (distanceFromObject < 0.001)
-        {
-            if (distanceFromOrigin >= closest_so_far) return false;
-
-            record.point = hitPoint;
-            record.t = distanceFromOrigin;
-            object->getNormalAt(hitPoint, ray, record);
-
-            return true;
-        }
-
-        if (distanceFromOrigin > 1000) return false;
-
-        distanceFromOrigin += distanceFromObject;
-    }
-
-    return false;
-}
 
 Utils::Color3 ray_cast(const Rendering::Ray& ray, const Rendering::Scene& world, int limit)
 {
@@ -46,36 +17,38 @@ Utils::Color3 ray_cast(const Rendering::Ray& ray, const Rendering::Scene& world,
     // double grey = (Ocean::heights[j * image.getWidth() + i] - Ocean::minValue) / (Ocean::maxValue - Ocean::minValue);
     // pixel_color += Utils::Color3(grey, grey, grey);
 
-    if (limit <= 0) { return Utils::Color3(0.0, 0.0, 0.0); }
-
+    if (limit <= 0)
+    {
+        Utils::Vector3 unit_direction = Utils::normalize(ray.getDirection());
+        double t = (std::sqrt(std::abs(unit_direction.getY())));
+        Utils::Color3 Sky = (1.0 - t) * Utils::Color3(1.0, 0.5, 0.0) + t * Utils::Color3(0.4, 0.75, 1.0);
+        
+        Utils::Color3 SunColor = Utils::Color3(1.0, 1.0, 0.7);
+        Utils::Vector3 sunDirection = Utils::normalize(Utils::Vector3(1.5, 0.1, 1.2));
+        double SunIntensity = std::pow(Utils::dot(unit_direction, sunDirection), 250.0);
+        Utils::Color3 Sun = SunIntensity * SunColor;
+        return Sky + Sun;
+    }
+    
     Rendering::Intersection_record record;
 
-    bool hit_anything = false;
-    double closest_so_far = std::numeric_limits<double>::max();
-    Rendering::Intersection_record tmp_record;
-
-    for (const auto& object : world.getObjects())
-    {
-        if (intersects(ray, object, record, closest_so_far))
-        {
-            hit_anything = true;
-            closest_so_far = record.t;
-            tmp_record = record;
-        }
-    }
+    bool hit_anything = worldIntersects(ray, world, record, std::numeric_limits<double>::max());
 
     if (hit_anything)
-    {
-        return 0.5 * Utils::Color3(tmp_record.normal.getX() + 1, tmp_record.normal.getY() + 1, tmp_record.normal.getZ() + 1);
+    {   
+        Utils::Point3 n_origin = record.point + record.normal * 0.01;
+        Utils::Vector3 n_direction = Utils::reflect(Utils::normalize(ray.getDirection()), record.normal);
+        Rendering::Ray n_ray(n_origin, n_direction);
+        return 0.7 * ray_cast(n_ray, world, limit - 1);
     }
     else
     {
         Utils::Vector3 unit_direction = Utils::normalize(ray.getDirection());
-        double t = (std::sqrt(unit_direction.getY()));
+        double t = (std::sqrt(std::abs(unit_direction.getY())));
         Utils::Color3 Sky = (1.0 - t) * Utils::Color3(1.0, 0.5, 0.0) + t * Utils::Color3(0.4, 0.75, 1.0);
         
         Utils::Color3 SunColor = Utils::Color3(1.0, 1.0, 0.7);
-        Utils::Vector3 sunDirection = Utils::normalize(Utils::Vector3(2.0, 0.0, 10.0));
+        Utils::Vector3 sunDirection = Utils::normalize(Utils::Vector3(1.5, 0.1, 1.2));
         double SunIntensity = std::pow(Utils::dot(unit_direction, sunDirection), 250.0);
         Utils::Color3 Sun = SunIntensity * SunColor;
         return Sky + Sun;
@@ -117,7 +90,7 @@ void render(Rendering::Image& image, const Rendering::Scene& world)
                 double v = double(j + Utils::Randomdouble()) / (image.getHeight() - 1);
 
                 Rendering::Ray ray = world.getCamera().getRay(u, v);
-                pixel_color += ray_cast(ray, world, 1);
+                pixel_color += ray_cast(ray, world, 50);
             }
 
             Rendering::Pixel pixel = processImageColor(pixel_color, image.getSamplesPerPixel());
@@ -140,11 +113,11 @@ int main(int argc, char** argv)
 
     std::vector<std::shared_ptr<Rendering::Object>> objects;
     Rendering::Scene world(objects);
+    Rendering::Sphere sphere(Utils::Point3(0.0, 0.0, 0.0), 0.3);
+    world.addObject(std::make_shared<Rendering::Sphere>(sphere));
 
-    auto materialUniform = std::make_shared<Rendering::UniformTexture>(Utils::Color3(0.5, 0.5, 0.5), 0.5, 0.5);
-    auto materialMirror = std::make_shared<Rendering::MirrorTexture>(Utils::Color3(0.5, 0.5, 0.5));
-    //Rendering::Sphere sphere(Utils::Point3(0.0, 0.0, 0.0), 0.5);
-    //world.addObject(std::make_shared<Rendering::Sphere>(sphere));
+    Rendering::Water water;
+    world.addObject(std::make_shared<Rendering::Water>(water));
 
     Ocean::generateSpectrum();
 
@@ -166,7 +139,7 @@ int main(int argc, char** argv)
     delete[] Ocean::spectrumReel;
     delete[] Ocean::heights;
     delete[] Ocean::pulsations;
-
+    
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end - start;
     std::cout << "Elapsed time: " << elapsed.count() << " seconds." << std::endl;

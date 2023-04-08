@@ -10,8 +10,8 @@
 
 namespace Ocean
 {
-    static Utils::Complex* spectrumFreq = new Utils::Complex[Settings::SCREEN_HEIGHT * Settings::SCREEN_WIDTH];
-    static Utils::Complex* spectrumReel = new Utils::Complex[Settings::SCREEN_HEIGHT * Settings::SCREEN_WIDTH];
+    inline Utils::Complex* spectrumFreq = new Utils::Complex[Settings::SCREEN_HEIGHT * Settings::SCREEN_WIDTH];
+    inline Utils::Complex* spectrumReel = new Utils::Complex[Settings::SCREEN_HEIGHT * Settings::SCREEN_WIDTH];
 
     inline double* heights = new double[Settings::SCREEN_HEIGHT * Settings::SCREEN_WIDTH];
     inline double* pulsations = new double[Settings::SCREEN_HEIGHT * Settings::SCREEN_WIDTH];
