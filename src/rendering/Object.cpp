@@ -21,24 +21,30 @@ namespace Rendering
 
     double Water::getDistance(const Utils::Point3& point) const
     {
-        //double height = bilinearInterpolation(point.getX(), point.getZ());
         double height = 0.0;
         return point.getY() - height;
     }
 
+    // A COMPRENDRE
+
     Utils::Vector3 Water::getNormalAt(const Utils::Point3& point, const Ray& ray, Intersection_record& record) const
     {
-        double height = bilinearInterpolation(point.getX(), point.getZ());
-        double heightX = bilinearInterpolation(point.getX() + 1, point.getZ());
-        double heightZ = bilinearInterpolation(point.getX(), point.getZ() + 1);
+        double epsilon = 0.001;
 
-        Utils::Vector3 vx = Utils::Vector3(1, heightX - height, 0);
-        Utils::Vector3 vz = Utils::Vector3(0, heightZ - height, 1);
-        Utils::Vector3 normal = Utils::cross(vx, vz);
+        Utils::Vector3 dx = Utils::Vector3(epsilon, 0, 0);
+        Utils::Vector3 dy = Utils::Vector3(0, epsilon, 0);
+        Utils::Vector3 dz = Utils::Vector3(0, 0, epsilon);
+
+        double x = getDistance(point + dx) - getDistance(point - dx);
+        double y = getDistance(point + dy) - getDistance(point - dy);
+        double z = getDistance(point + dz) - getDistance(point - dz);
+
+        Utils::Vector3 normal = Utils::normalize(Utils::Vector3(x, y, z));
         record.setFaceNormal(ray, normal);
         return record.normal;
     }
 
+    // A COMPRENDRE
     double Water::bilinearInterpolation(double x, double y) const
     {
         int width = Settings::SCREEN_WIDTH - 1;

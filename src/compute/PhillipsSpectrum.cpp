@@ -31,8 +31,8 @@ namespace Ocean
 
     void generateSpectrum()
     {
-        int N = Settings::SCREEN_WIDTH;
-        int M = Settings::SCREEN_HEIGHT;
+        int N = Settings::heightMapWidth;
+        int M = Settings::heightMapHeight;
 
         for (int i = -M/2; i < M/2; i++)
         {
@@ -69,8 +69,8 @@ namespace Ocean
 
     void updateHeights(double t)
     {   
-        int N = Settings::SCREEN_WIDTH;
-        int M = Settings::SCREEN_HEIGHT;
+        int N = Settings::heightMapWidth;
+        int M = Settings::heightMapHeight;
 
         minValue = 0.0;
         maxValue = 0.0;
@@ -107,8 +107,8 @@ namespace Ocean
 
                 heights[index] = sign * h;
 
-                if (h < minValue) minValue = h;
-                if (h > maxValue) maxValue = h;
+                if (heights[index] < minValue) minValue = heights[index];
+                if (heights[index] > maxValue) maxValue = heights[index];
             }
         }
     }

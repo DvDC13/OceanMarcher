@@ -26,7 +26,7 @@ namespace Rendering
 
     Rendering::Ray Camera::getRay(double u, double v) const
     {
-        return Rendering::Ray(m_look_from, m_bottom_left_corner + u * m_horizontal + v * m_vertical - m_look_from);
+        return Rendering::Ray(m_look_from, m_bottom_left_corner + u * m_horizontal + v * m_vertical - m_look_from, Utils::Color3(1.0, 1.0, 1.0));
     }
 
     double Camera::degreesToRadians(double degrees) const

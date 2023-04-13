@@ -10,11 +10,11 @@
 
 namespace Ocean
 {
-    inline Utils::Complex* spectrumFreq = new Utils::Complex[Settings::SCREEN_HEIGHT * Settings::SCREEN_WIDTH];
-    inline Utils::Complex* spectrumReel = new Utils::Complex[Settings::SCREEN_HEIGHT * Settings::SCREEN_WIDTH];
+    inline Utils::Complex* spectrumFreq = new Utils::Complex[Settings::heightMapHeight * Settings::heightMapWidth];
+    inline Utils::Complex* spectrumReel = new Utils::Complex[Settings::heightMapHeight * Settings::heightMapWidth];
 
-    inline double* heights = new double[Settings::SCREEN_HEIGHT * Settings::SCREEN_WIDTH];
-    inline double* pulsations = new double[Settings::SCREEN_HEIGHT * Settings::SCREEN_WIDTH];
+    inline double* heights = new double[Settings::heightMapHeight * Settings::heightMapWidth];
+    inline double* pulsations = new double[Settings::heightMapHeight * Settings::heightMapWidth];
 
     inline double minValue;
     inline double maxValue;

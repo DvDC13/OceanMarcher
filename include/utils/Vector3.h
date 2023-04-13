@@ -1,6 +1,8 @@
 #pragma once
 
+#include <iostream>
 #include <cmath>
+#include <algorithm>
 
 namespace Utils
 {
@@ -13,6 +15,10 @@ namespace Utils
         inline double getX() const { return m_x; }
         inline double getY() const { return m_y; }
         inline double getZ() const { return m_z; }
+
+        inline void setX(double x) { m_x = x; }
+        inline void setY(double y) { m_y = y; }
+        inline void setZ(double z) { m_z = z; }
 
         Vector3 operator-() const;
 
@@ -33,6 +39,11 @@ namespace Utils
     inline Vector3 operator*(double scalar, const Vector3& v)
     {
         return v * scalar;
+    }
+
+    inline Vector3 operator*(const Vector3& a, const Vector3& b)
+    {
+        return Vector3(a.getX() * b.getX(), a.getY() * b.getY(), a.getZ() * b.getZ());
     }
 
     inline double dot(const Vector3& a, const Vector3& b)
@@ -88,6 +99,42 @@ namespace Utils
     {
         const double s = 1e-8;
         return (std::abs(v.getX()) < s) && (std::abs(v.getY()) < s) && (std::abs(v.getZ()) < s);
+    }
+
+    // Check PAS BON
+    inline double fresnel(const Vector3&v, const Vector3& n, double ior, double kr)
+    {
+        double cosTheta = std::min(dot(-v, n), 1.0);
+        double sinTheta = std::sqrt(1.0 - cosTheta * cosTheta);
+
+        double etaI = 1.0;
+        double etaT = ior;
+
+        if (cosTheta > 0)
+        {
+            std::swap(etaI, etaT);
+        }
+
+        double eta = etaI / etaT;
+        double sinThetaT = eta * sinTheta;
+
+        if (sinThetaT > 1.0)
+        {
+            kr = 1.0;
+        }
+        else
+        {
+            double cosThetaT = std::sqrt(1.0 - sinThetaT * sinThetaT);
+            cosTheta = std::abs(cosTheta);
+            cosThetaT = std::abs(cosThetaT);
+
+            double rParallel = ((etaT * cosTheta) - (etaI * cosThetaT)) / ((etaT * cosTheta) + (etaI * cosThetaT));
+            double rPerpendicular = ((etaI * cosTheta) - (etaT * cosThetaT)) / ((etaI * cosTheta) + (etaT * cosThetaT));
+
+            kr = (rParallel * rParallel + rPerpendicular * rPerpendicular) / 2.0;
+        }
+
+        return kr;
     }
 
     using Point3 = Vector3;
