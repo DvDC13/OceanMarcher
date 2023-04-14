@@ -13,27 +13,28 @@
 
 Utils::Color3 envColor(const Utils::Vector3& direction)
 {
-    Utils::Vector3 unit_direction = Utils::normalize(direction);
-    double t = (std::sqrt(std::abs(unit_direction.getY())));
-    Utils::Color3 Sky = (1.0 - t) * Utils::Color3(1.0, 0.5, 0.0) + t * Utils::Color3(0.4, 0.75, 1.0);
+    double t = (std::sqrt(std::abs(direction.getY())));
+    Utils::Color3 Sky = (1.0 - t) * Utils::Color3(1.0, 0.5, 0.0) + t * Utils::Color3(0.3, 0.65, 1.0);
     Utils::Color3 SunColor = Utils::Color3(1.0, 1.0, 0.7);
     Utils::Vector3 sunDirection = Utils::normalize(Utils::Vector3(2.0, 0.0, -10.0));
-    double SunIntensity = std::pow(std::max(-Utils::dot(unit_direction, sunDirection), 0.0), 1500.0);
+    double SunIntensity = std::pow(std::max(-Utils::dot(direction, sunDirection), 0.0), 1500.0);
     Utils::Color3 Sun = SunIntensity * SunColor;
     return Sky + Sun;
 }
 
-Utils::Color3 ray_cast(const Rendering::Ray& ray, const Rendering::Scene& world)
+Utils::Color3 ray_cast(Rendering::Ray& ray, const Rendering::Scene& world)
 {
+    ray.setDirection(Utils::normalize(ray.getDirection()));
+
     Utils::Color3 pixel_color = envColor(ray.getDirection()) * ray.getIntensity();
     
     Rendering::Intersection_record record;
 
-    bool hit_anything = worldIntersects(ray, world, record, std::numeric_limits<double>::max());
+    bool hit_anything = worldIntersects(ray, world, record, std::numeric_limits<double>::infinity());
 
     if (hit_anything)
     {   
-        Utils::Point3 n_origin = record.point + record.normal * 0.01;
+        Utils::Point3 n_origin = record.point + record.normal * 0.001;
         Utils::Vector3 n_direction = Utils::reflect(Utils::normalize(ray.getDirection()), record.normal);
 
         double fresnel = std::abs(Utils::dot(Utils::normalize(ray.getDirection()), record.normal));
@@ -44,15 +45,14 @@ Utils::Color3 ray_cast(const Rendering::Ray& ray, const Rendering::Scene& world)
 
         //Utils::Color3 n_intensity = ray.getIntensity();
 
-        n_origin.setY(n_origin.getY() + 0.001);
-
         Rendering::Ray n_ray(n_origin, n_direction, n_intensity);
         
         return ray_cast(n_ray, world);
+        //return pixel_color + ray_cast(n_ray, world);
     }
     else
     {
-        return pixel_color * ray.getIntensity();
+        return pixel_color;
     }
 }
 
@@ -114,7 +114,7 @@ int main(int argc, char** argv)
 
     std::vector<std::shared_ptr<Rendering::Object>> objects;
     Rendering::Scene world(objects);
-    Rendering::Sphere sphere(Utils::Point3(0.0, 0.5, 0.8), 0.25);
+    Rendering::Sphere sphere(Utils::Point3(0.0, 0.2, 0.8), 0.2);
     world.addObject(std::make_shared<Rendering::Sphere>(sphere));
 
     Rendering::Water water;

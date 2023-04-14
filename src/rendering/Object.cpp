@@ -25,8 +25,6 @@ namespace Rendering
         return point.getY() - height;
     }
 
-    // A COMPRENDRE
-
     Utils::Vector3 Water::getNormalAt(const Utils::Point3& point, const Ray& ray, Intersection_record& record) const
     {
         double epsilon = 0.001;
