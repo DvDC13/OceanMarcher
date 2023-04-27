@@ -21,7 +21,8 @@ namespace Rendering
 
     double Water::getDistance(const Utils::Point3& point) const
     {
-        double height = 0.0;
+        double height = 0.000048F * bilinearInterpolation(point.getX() * 5.0, point.getZ() * 5.0);
+
         return point.getY() - height;
     }
 
@@ -43,27 +44,32 @@ namespace Rendering
     }
 
     // A COMPRENDRE
-    double Water::bilinearInterpolation(double x, double y) const
+    double Water::bilinearInterpolation(double x, double z) const
     {
-        int width = Settings::SCREEN_WIDTH - 1;
-        int height = Settings::SCREEN_HEIGHT - 1;
+        double width = Settings::heightMapWidth;
+        double height = Settings::heightMapHeight;
 
-        int xi0 = x - width * std::floor(x / width);
-        int yi0 = y - height * std::floor(y / height);
-        int xi1 = (xi0 + 1) - width * std::floor((xi0 + 1) / width);
-        int yi1 = (yi0 + 1) - height * std::floor((yi0 + 1) / height);
+        double p_left = std::fmod((std::fmod(x, width) + width), width);
+        double p_right = std::fmod((std::fmod(x + 1, width) + width), width);
+        double p_top = std::fmod((std::fmod(z, height) + height), height);
+        double p_bottom = std::fmod((std::fmod(z + 1, height) + height), height);
 
-        double sx = x - (double)std::floor(x);
-        double sy = y - (double)std::floor(y);
+        int x1 = std::floor(p_left);
+        int x2 = std::floor(p_right);
+        int y1 = std::floor(p_top);
+        int y2 = std::floor(p_bottom);
 
-        double topLeft = Ocean::heights[xi0 * (width + 1) + yi0];
-        double topRight = Ocean::heights[xi1 * (width + 1) + yi0];
-        double bottomLeft = Ocean::heights[xi0 * (width + 1) + yi1];
-        double bottomRight = Ocean::heights[xi1 * (width + 1) + yi1];
+        double qTopLeft = Ocean::heights[y1 + x1 * (int)width];
+        double qTopRight = Ocean::heights[y2 + x1 * (int)width];
+        double qBottomLeft = Ocean::heights[y1 + x2 * (int)width];
+        double qBottomRight = Ocean::heights[y2 + x2 * (int)width];
 
-        double top = (1 - sx) * topLeft + sx * topRight;
-        double bottom = (1 - sx) * bottomLeft + sx * bottomRight;
+        double xRatio = x - std::floor(x);
+        double yRatio = z - std::floor(z);
 
-        return (1 - sy) * top + sy * bottom;
+        double qTop = qTopLeft * (1 - xRatio) + qTopRight * xRatio;
+        double qBottom = qBottomLeft * (1 - xRatio) + qBottomRight * xRatio;
+
+        return qTop * (1 - yRatio) + qBottom * yRatio;
     }
 }

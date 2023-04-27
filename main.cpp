@@ -34,7 +34,7 @@ Utils::Color3 ray_cast(Rendering::Ray& ray, const Rendering::Scene& world)
 
     if (hit_anything)
     {   
-        Utils::Point3 n_origin = record.point + record.normal * 0.001;
+        Utils::Point3 n_origin = record.point + record.normal * 0.002;
         Utils::Vector3 n_direction = Utils::reflect(Utils::normalize(ray.getDirection()), record.normal);
 
         double fresnel = std::abs(Utils::dot(Utils::normalize(ray.getDirection()), record.normal));
@@ -114,8 +114,8 @@ int main(int argc, char** argv)
 
     std::vector<std::shared_ptr<Rendering::Object>> objects;
     Rendering::Scene world(objects);
-    Rendering::Sphere sphere(Utils::Point3(0.0, 0.2, 0.8), 0.2);
-    world.addObject(std::make_shared<Rendering::Sphere>(sphere));
+    //Rendering::Sphere sphere(Utils::Point3(0.0, 0.2, 0.8), 0.2);
+    //world.addObject(std::make_shared<Rendering::Sphere>(sphere));
 
     Rendering::Water water;
     world.addObject(std::make_shared<Rendering::Water>(water));

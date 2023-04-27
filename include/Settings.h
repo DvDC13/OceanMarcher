@@ -5,7 +5,7 @@
 
 namespace Settings
 {
-    inline constexpr int NUM_FRAMES = 1;
+    inline constexpr int NUM_FRAMES = 500;
     inline constexpr int SCREEN_WIDTH = 512;
     inline constexpr int SCREEN_HEIGHT = 512;
     // problem when width != height

@@ -5,15 +5,18 @@ namespace Rendering
     bool objectIntersects(const Rendering::Ray &ray, const auto &object, Rendering::Intersection_record &record, double closest_so_far)
     {
         double distanceFromOrigin = 0.0;
+        Utils::Point3 hitPoint = ray.getPointAt(distanceFromOrigin);
         for (double p = 0; p < precision; p++)
         {
-            Utils::Point3 hitPoint = ray.getPointAt(distanceFromOrigin);
+            hitPoint = ray.getPointAt(distanceFromOrigin);
             double distanceFromObject = object->getDistance(hitPoint);
 
-            if (distanceFromObject < 0.001)
+            if (std::abs(distanceFromObject) < 0.001)
             {
                 if (distanceFromOrigin >= closest_so_far)
+                {
                     return false;
+                }
 
                 record.point = hitPoint;
                 record.t = distanceFromOrigin;
@@ -22,8 +25,10 @@ namespace Rendering
                 return true;
             }
 
-            if (distanceFromOrigin > 1000)
+            if (distanceFromOrigin > 1000.0)
+            {
                 return false;
+            }
 
             distanceFromOrigin += distanceFromObject;
         }

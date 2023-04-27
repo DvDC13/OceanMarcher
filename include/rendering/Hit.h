@@ -5,7 +5,7 @@
 
 namespace Rendering
 {
-    const double precision = 255.0;
+    const double precision = 300.0;
 
     bool objectIntersects(const Rendering::Ray& ray, const auto& object, Rendering::Intersection_record& record, double closest_so_far);
 
