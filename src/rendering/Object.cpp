@@ -21,7 +21,7 @@ namespace Rendering
 
     double Water::getDistance(const Utils::Point3& point) const
     {
-        double height = 0.000048F * bilinearInterpolation(point.getX() * 5.0, point.getZ() * 5.0);
+        double height = 0.000048F * bilinearInterpolation(point.getX() * 6.0, point.getZ() * 6.0);
 
         return point.getY() - height;
     }
@@ -43,33 +43,36 @@ namespace Rendering
         return record.normal;
     }
 
-    // A COMPRENDRE
-    double Water::bilinearInterpolation(double x, double z) const
+    double mod(double x, double y)
     {
-        double width = Settings::heightMapWidth;
-        double height = Settings::heightMapHeight;
+        return x - y * std::floor(x / y);
+    }
 
-        double p_left = std::fmod((std::fmod(x, width) + width), width);
-        double p_right = std::fmod((std::fmod(x + 1, width) + width), width);
-        double p_top = std::fmod((std::fmod(z, height) + height), height);
-        double p_bottom = std::fmod((std::fmod(z + 1, height) + height), height);
+    double lerp(double x, double y, float a)
+    {
+        return (1.f - a) * x + a * y;
+    }
 
-        int x1 = std::floor(p_left);
-        int x2 = std::floor(p_right);
-        int y1 = std::floor(p_top);
-        int y2 = std::floor(p_bottom);
+    double Water::bilinearInterpolation(double x, double y) const
+    {
+        int width = Settings::heightMapWidth;
+        int height = Settings::heightMapHeight;
 
-        double qTopLeft = Ocean::heights[y1 + x1 * (int)width];
-        double qTopRight = Ocean::heights[y2 + x1 * (int)width];
-        double qBottomLeft = Ocean::heights[y1 + x2 * (int)width];
-        double qBottomRight = Ocean::heights[y2 + x2 * (int)width];
+        int xi1 = mod(x, width - 1);
+        int yi1 = mod(y, height - 1);
+        int xi2 = mod(x + 1, width - 1);
+        int yi2 = mod(y + 1, height - 1);
 
-        double xRatio = x - std::floor(x);
-        double yRatio = z - std::floor(z);
+        double topLeft = Ocean::heights[yi1 + xi1 * width];
+        double topRight = Ocean::heights[yi1 + xi2 * width];
+        double bottomLeft = Ocean::heights[yi2 + xi1 * width];
+        double bottomRight = Ocean::heights[yi2 + xi2 * width];
 
-        double qTop = qTopLeft * (1 - xRatio) + qTopRight * xRatio;
-        double qBottom = qBottomLeft * (1 - xRatio) + qBottomRight * xRatio;
+        double xf = x - std::floor(x);
+        double top = lerp(topLeft, topRight, xf);
+        double bottom = lerp(bottomLeft, bottomRight, xf);
 
-        return qTop * (1 - yRatio) + qBottom * yRatio;
+        double yf = y - std::floor(y);
+        return lerp(top, bottom, yf);
     }
 }

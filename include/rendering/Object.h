@@ -56,6 +56,6 @@ namespace Rendering
         virtual Utils::Vector3 getNormalAt(const Utils::Point3& point, const Ray& ray, Intersection_record& record) const override;
 
     private:
-        double bilinearInterpolation(double x, double z) const;
+        double bilinearInterpolation(double x, double y) const;
     };
 }

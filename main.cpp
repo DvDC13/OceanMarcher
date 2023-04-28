@@ -11,6 +11,34 @@
 #include "Hit.h"
 #include "PhillipsSpectrum.h"
 
+void saveHeights()
+{
+    std::ofstream file("heights.bin", std::ios::binary);
+    if (!file.is_open())
+    {
+        std::cerr << "Error: Failed to open file for writing\n";
+        return;
+    }
+
+    file.write((char*)Ocean::heights, sizeof(double) * Settings::heightMapWidth * Settings::heightMapHeight);
+
+    file.close();
+}
+
+void loadHeights()
+{
+    std::ifstream file("heights.bin", std::ios::binary);
+    if (!file.is_open())
+    {
+        std::cerr << "Error: Failed to open file for reading\n";
+        return;
+    }
+
+    file.read((char*)Ocean::heights, sizeof(double) * Settings::heightMapWidth * Settings::heightMapHeight);
+
+    file.close();
+}
+
 Utils::Color3 envColor(const Utils::Vector3& direction)
 {
     double t = (std::sqrt(std::abs(direction.getY())));
@@ -34,7 +62,7 @@ Utils::Color3 ray_cast(Rendering::Ray& ray, const Rendering::Scene& world)
 
     if (hit_anything)
     {   
-        Utils::Point3 n_origin = record.point + record.normal * 0.002;
+        Utils::Point3 n_origin = record.point + record.normal * 0.005;
         Utils::Vector3 n_direction = Utils::reflect(Utils::normalize(ray.getDirection()), record.normal);
 
         double fresnel = std::abs(Utils::dot(Utils::normalize(ray.getDirection()), record.normal));
@@ -42,8 +70,6 @@ Utils::Color3 ray_cast(Rendering::Ray& ray, const Rendering::Scene& world)
 
         //double kr = Utils::fresnel(Utils::normalize(ray.getDirection()), record.normal, 1.0, 1.33);
         //Utils::Color3 n_intensity = ray.getIntensity() * kr;
-
-        //Utils::Color3 n_intensity = ray.getIntensity();
 
         Rendering::Ray n_ray(n_origin, n_direction, n_intensity);
         
@@ -114,7 +140,7 @@ int main(int argc, char** argv)
 
     std::vector<std::shared_ptr<Rendering::Object>> objects;
     Rendering::Scene world(objects);
-    //Rendering::Sphere sphere(Utils::Point3(0.0, 0.2, 0.8), 0.2);
+    //Rendering::Sphere sphere(Utils::Point3(0.0, 0.2, 0.8), 2.2);
     //world.addObject(std::make_shared<Rendering::Sphere>(sphere));
 
     Rendering::Water water;
@@ -126,7 +152,7 @@ int main(int argc, char** argv)
     {
         std::cout << "Frame " << t << std::endl;
 
-        Ocean::updateHeights(t * 0.04);
+        Ocean::updateHeights(t * 0.01666667);
 
         render(image, world);
 
