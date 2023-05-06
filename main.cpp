@@ -11,70 +11,58 @@
 #include "Hit.h"
 #include "PhillipsSpectrum.h"
 
-void saveHeights()
-{
-    std::ofstream file("heights.bin", std::ios::binary);
-    if (!file.is_open())
-    {
-        std::cerr << "Error: Failed to open file for writing\n";
-        return;
-    }
-
-    file.write((char*)Ocean::heights, sizeof(double) * Settings::heightMapWidth * Settings::heightMapHeight);
-
-    file.close();
-}
-
-void loadHeights()
-{
-    std::ifstream file("heights.bin", std::ios::binary);
-    if (!file.is_open())
-    {
-        std::cerr << "Error: Failed to open file for reading\n";
-        return;
-    }
-
-    file.read((char*)Ocean::heights, sizeof(double) * Settings::heightMapWidth * Settings::heightMapHeight);
-
-    file.close();
-}
-
-Utils::Color3 envColor(const Utils::Vector3& direction)
+Utils::Color3 envColor(const Utils::Vector3& direction, double frame, double threshold)
 {
     double t = (std::sqrt(std::abs(direction.getY())));
-    Utils::Color3 Sky = (1.0 - t) * Utils::Color3(1.0, 0.5, 0.0) + t * Utils::Color3(0.3, 0.65, 1.0);
+
     Utils::Color3 SunColor = Utils::Color3(1.0, 1.0, 0.7);
-    Utils::Vector3 sunDirection = Utils::normalize(Utils::Vector3(2.0, 0.0, -10.0));
+
+    Utils::Color3 Sky = Utils::Color3(0.3, 0.65, 1.0);
+    Utils::Color3 Sunset = (1.0 - t) * Utils::Color3(1.0, 0.5, 0.0) + t * Utils::Color3(0.3, 0.65, 1.0);
+
+    double sunPeriod = -4.0 + frame * (Settings::maxSunP - Settings::minSunP) / Settings::NUM_FRAMES;
+
+    Utils::Color3 HorizonColor = Utils::Color3(0.0, 0.0, 0.0);
+    if (threshold >= frame)
+    {
+        double p = frame / threshold;
+        HorizonColor = (1.0 - p) * Sky + p * Sunset;
+    }
+    else
+    {
+        double p = (frame - threshold) / (Settings::NUM_FRAMES - threshold);
+        Utils::Color3 NightColor = Utils::Color3(0.0, 0.05, 0.22);
+        HorizonColor = (1.0 - p) * Sunset + p * NightColor;
+    }
+
+    Utils::Vector3 sunDirection = Utils::normalize(Utils::Vector3(2.0, sunPeriod, -10.0));
+
     double SunIntensity = std::pow(std::max(-Utils::dot(direction, sunDirection), 0.0), 1500.0);
     Utils::Color3 Sun = SunIntensity * SunColor;
-    return Sky + Sun;
+    return HorizonColor + Sun;
 }
 
-Utils::Color3 ray_cast(Rendering::Ray& ray, const Rendering::Scene& world)
+Utils::Color3 ray_cast(Rendering::Ray& ray, const Rendering::Scene& world, double frame, double threshold)
 {
     ray.setDirection(Utils::normalize(ray.getDirection()));
-
-    Utils::Color3 pixel_color = envColor(ray.getDirection()) * ray.getIntensity();
     
     Rendering::Intersection_record record;
 
     bool hit_anything = worldIntersects(ray, world, record, std::numeric_limits<double>::infinity());
+
+    Utils::Color3 pixel_color = envColor(ray.getDirection(), frame, threshold) * ray.getIntensity();
 
     if (hit_anything)
     {   
         Utils::Point3 n_origin = record.point + record.normal * 0.005;
         Utils::Vector3 n_direction = Utils::reflect(Utils::normalize(ray.getDirection()), record.normal);
 
-        double fresnel = std::abs(Utils::dot(Utils::normalize(ray.getDirection()), record.normal));
-        Utils::Color3 n_intensity = ray.getIntensity() * (1.0 - 0.9 * fresnel);
-
-        //double kr = Utils::fresnel(Utils::normalize(ray.getDirection()), record.normal, 1.0, 1.33);
-        //Utils::Color3 n_intensity = ray.getIntensity() * kr;
+        double kr = Utils::fresnel(Utils::normalize(ray.getDirection()), record.normal, 1.333);
+        Utils::Color3 n_intensity = ray.getIntensity() * kr;
 
         Rendering::Ray n_ray(n_origin, n_direction, n_intensity);
         
-        return ray_cast(n_ray, world);
-        //return pixel_color + ray_cast(n_ray, world);
+        return ray_cast(n_ray, world, frame, threshold);
     }
     else
     {
@@ -102,7 +90,7 @@ Rendering::Pixel processImageColor(Utils::Color3& pixel_color, int samples_per_p
     return pixel;
 }
 
-void render(Rendering::Image& image, const Rendering::Scene& world)
+void render(Rendering::Image& image, const Rendering::Scene& world, double frame, double threshold)
 {
     for (int j = image.getHeight() - 1; j >= 0; j--)
     {
@@ -117,7 +105,7 @@ void render(Rendering::Image& image, const Rendering::Scene& world)
                 double v = double(j + Utils::Randomdouble()) / (image.getHeight() - 1);
 
                 Rendering::Ray ray = world.getCamera().getRay(u, v);
-                pixel_color += ray_cast(ray, world);
+                pixel_color += ray_cast(ray, world, frame, threshold);
             }
 
             Rendering::Pixel pixel = processImageColor(pixel_color, image.getSamplesPerPixel());
@@ -140,23 +128,32 @@ int main(int argc, char** argv)
 
     std::vector<std::shared_ptr<Rendering::Object>> objects;
     Rendering::Scene world(objects);
-    //Rendering::Sphere sphere(Utils::Point3(0.0, 0.2, 0.8), 2.2);
-    //world.addObject(std::make_shared<Rendering::Sphere>(sphere));
 
     Rendering::Water water;
     world.addObject(std::make_shared<Rendering::Water>(water));
 
     Ocean::generateSpectrum();
 
-    for (int t = 0; t < Settings::NUM_FRAMES; t++)
+    double threshold = 0.0;
+    for (int frame = 0; frame < Settings::NUM_FRAMES; frame++)
     {
-        std::cout << "Frame " << t << std::endl;
+        double sunPeriod = -4.0 + frame * (Settings::maxSunP - Settings::minSunP) / Settings::NUM_FRAMES;
+        if (sunPeriod >= 0.0)
+        {
+            threshold = frame;
+            break;
+        }
+    }
 
-        Ocean::updateHeights(t * 0.01666667);
+    for (int frame = 0; frame < Settings::NUM_FRAMES; frame++)
+    {
+        std::cout << "Frame " << frame << std::endl;
 
-        render(image, world);
+        Ocean::updateHeights(frame * 0.033);
 
-        std::string path = "output/frame_" + std::to_string(t) + ".ppm";
+        render(image, world, frame, threshold);
+
+        std::string path = "output/frame_" + std::to_string(frame) + ".ppm";
         image.savePPM(path);
     }
 

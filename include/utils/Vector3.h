@@ -102,39 +102,30 @@ namespace Utils
     }
 
     // Check PAS BON
-    inline double fresnel(const Vector3&v, const Vector3& n, double ior, double kr)
+    inline double fresnel(const Vector3&v, const Vector3& n, double ior)
     {
-        double cosTheta = std::min(dot(-v, n), 1.0);
-        double sinTheta = std::sqrt(1.0 - cosTheta * cosTheta);
-
-        double etaI = 1.0;
-        double etaT = ior;
-
-        if (cosTheta > 0)
+        double cosi = std::clamp(dot(v, n), -1.0, 1.0);
+        double etai = 1, etat = ior;
+        
+        if (cosi > 0)
         {
-            std::swap(etaI, etaT);
+            std::swap(etai, etat);
         }
 
-        double eta = etaI / etaT;
-        double sinThetaT = eta * sinTheta;
+        double sint = etai / etat * std::sqrt(std::max(0.0, 1 - cosi * cosi));
 
-        if (sinThetaT > 1.0)
+        if (sint >= 1)
         {
-            kr = 1.0;
+            return 1;
         }
         else
         {
-            double cosThetaT = std::sqrt(1.0 - sinThetaT * sinThetaT);
-            cosTheta = std::abs(cosTheta);
-            cosThetaT = std::abs(cosThetaT);
-
-            double rParallel = ((etaT * cosTheta) - (etaI * cosThetaT)) / ((etaT * cosTheta) + (etaI * cosThetaT));
-            double rPerpendicular = ((etaI * cosTheta) - (etaT * cosThetaT)) / ((etaI * cosTheta) + (etaT * cosThetaT));
-
-            kr = (rParallel * rParallel + rPerpendicular * rPerpendicular) / 2.0;
+            double cost = std::sqrt(std::max(0.0, 1 - sint * sint));
+            cosi = std::abs(cosi);
+            double Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
+            double Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
+            return (Rs * Rs + Rp * Rp) / 2;
         }
-
-        return kr;
     }
 
     using Point3 = Vector3;

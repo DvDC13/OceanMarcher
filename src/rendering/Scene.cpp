@@ -5,8 +5,8 @@ namespace Rendering
     Scene::Scene(const std::vector<std::shared_ptr<Object>>& objects)
         : m_objects(objects)
     {
-        Utils::Vector3 look_from = Utils::Vector3(0.0, 15.0, -17.0);
-        Utils::Vector3 look_at = Utils::Vector3(0.0, 0.0, 5.0);
+        Utils::Vector3 look_from = Utils::Vector3(0.0, 3.0, -1.0);
+        Utils::Vector3 look_at = Utils::Vector3(0.0, 0.0, 6.0);
         Utils::Vector3 up = Utils::Vector3(0.0, 1.0, 0.0);
         double vertical_fov = 90.0;
         double aspect_ratio = 1.0;

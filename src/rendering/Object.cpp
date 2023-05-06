@@ -21,8 +21,7 @@ namespace Rendering
 
     double Water::getDistance(const Utils::Point3& point) const
     {
-        double height = 0.000048F * bilinearInterpolation(point.getX() * 6.0, point.getZ() * 6.0);
-
+        double height = 0.00004 * bilinearInterpolation(point.getX() * 10.0, point.getZ() * 10.0);
         return point.getY() - height;
     }
 

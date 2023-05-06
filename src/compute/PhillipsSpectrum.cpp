@@ -11,13 +11,13 @@ namespace Ocean
         double kDotW2 = kDotW * kDotW;
 
         double k2 = Utils::lengthSquared(k);
-        double k4 = k2 * k2;
+        double k6 = k2 * k2 * k2;
 
         double A = 1;
 
         if (k2 < 0.000001) return 0.0;
 
-        double result = A / k4 * std::exp(-1.0 / (k2 * L2)) * kDotW2;
+        double result = A / k6 * std::exp(-1.0 / (k2 * L2)) * kDotW2;
 
         if (kDotW < 0.0) result *= 0.07;
 
