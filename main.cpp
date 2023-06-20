@@ -138,6 +138,8 @@ int main()
         }
     }
 
+    system("mkdir -p output");
+
     for (int frame = 0; frame < Settings::NUM_FRAMES; frame++)
     {
         std::cout << "Frame " << frame << std::endl;
@@ -150,7 +152,6 @@ int main()
         image.savePPM(path);
     }
 
-    system("mkdir -p output");
     system("ffmpeg -y -i output/frame_%d.ppm output/ocean.mp4");
 
     delete[] Ocean::spectrumFreq;
