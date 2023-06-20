@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <limits>
 
-#include "CommandLineOptions.h"
 #include "Image.h"
 #include "Ray.h"
 #include "Scene.h"
@@ -114,14 +113,8 @@ void render(Rendering::Image& image, const Rendering::Scene& world, double frame
     }
 }
 
-int main(int argc, char** argv)
+int main()
 {
-    Utils::CommandLineOptions options;
-    Utils::CommandLineOptions::Status status = options.parse(argc, argv);
-
-    if (status == Utils::CommandLineOptions::Status::HELP) { return EXIT_SUCCESS; }
-    if (status == Utils::CommandLineOptions::Status::VERSION) { return EXIT_SUCCESS; }
-
     auto start = std::chrono::high_resolution_clock::now();
 
     Rendering::Image image(Settings::SCREEN_WIDTH, Settings::SCREEN_HEIGHT, 1);
@@ -149,7 +142,7 @@ int main(int argc, char** argv)
     {
         std::cout << "Frame " << frame << std::endl;
 
-        Ocean::updateHeights(frame * 0.033);
+        Ocean::updateHeights(frame * 0.01666667f);
 
         render(image, world, frame, threshold);
 
@@ -157,6 +150,7 @@ int main(int argc, char** argv)
         image.savePPM(path);
     }
 
+    system("mkdir -p output");
     system("ffmpeg -y -i output/frame_%d.ppm output/ocean.mp4");
 
     delete[] Ocean::spectrumFreq;

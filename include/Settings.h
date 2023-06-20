@@ -5,10 +5,10 @@
 
 namespace Settings
 {
-    inline constexpr int NUM_FRAMES = 480;
-    inline constexpr int SCREEN_WIDTH = 512;
-    inline constexpr int SCREEN_HEIGHT = 512;
-    inline constexpr int NUM_SAMPLES = 1;
+    inline constexpr int NUM_FRAMES = 1200;
+    inline constexpr int SCREEN_WIDTH = 1024;
+    inline constexpr int SCREEN_HEIGHT = 1024;
+    inline constexpr int NUM_SAMPLES = 100;
 
     inline constexpr double minSunP = -4.0;
     inline constexpr double maxSunP = 1.5;
@@ -21,4 +21,5 @@ namespace Settings
     inline constexpr double gravity = 9.81;
     inline constexpr double Lx = 256;
     inline constexpr double Ly = 256;
+
 } // namespace Settings
