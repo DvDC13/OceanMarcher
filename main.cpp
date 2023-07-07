@@ -8,7 +8,7 @@
 #include "Ray.h"
 #include "Scene.h"
 #include "Hit.h"
-#include "PhillipsSpectrum.h"
+#include "Ocean.h"
 
 Utils::Color3 envColor(const Utils::Vector3& direction, double frame, double threshold)
 {

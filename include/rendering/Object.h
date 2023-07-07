@@ -2,7 +2,7 @@
 
 #include "Vector3.h"
 #include "Ray.h"
-#include "PhillipsSpectrum.h"
+#include "Ocean.h"
 
 namespace Rendering
 {
