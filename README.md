@@ -47,9 +47,11 @@ To set up OceanMarcher on your system, follow these steps:
 
 * Optionally, if you want to output the rendering as a video, make sure ffmpeg is installed on your system. Then, modify the source code to include the necessary video output functionality.      Finally, rebuild the application using the steps outlined in steps 4 and 5.
 
-## Demo Video
+## Image Examples
 
-![OceanMarcher Demo Video](https://drive.google.com/file/d/1ZbXLDkREuuRnK0BFFeWSVYsWgASMPpiO/view?usp=drive_link)
+![Drag Racing](./examples/day.png)
+![Drag Racing](./examples/sunset.png)
+![Drag Racing](./examples/night.png)
 
 ## Conclusion
 OceanMarcher is a powerful tool for realistic ocean rendering based on ray marching and FFT-based height map calculation. By following the setup instructions outlined in this document, you should be able to build and run OceanMarcher on your system successfully.
