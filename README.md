@@ -17,8 +17,6 @@ To set up OceanMarcher on your system, follow these steps:
 
 * Clone the OceanMarcher repository from the source code repository.
   
-  ```git clone https://github.com/your-username/OceanMarcher.git```
-  
   Alternatively, you can download the source code as a ZIP archive and extract it to a local directory.
 
 * Navigate to the OceanMarcher directory.
