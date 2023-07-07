@@ -51,7 +51,7 @@ To set up OceanTracer on your system, follow these steps:
 
 ## Demo Video
 
-![OceanTracer Demo Video](https://drive.google.com/drive/u/1/folders/1qOxk7eqcZwZMFJ38xz3Bf6HJIRhouJwV)
+![OceanTracer Demo Video](https://drive.google.com/file/d/1ZbXLDkREuuRnK0BFFeWSVYsWgASMPpiO/view?usp=drive_link)
 
 ## Conclusion
 OceanTracer is a powerful tool for realistic ocean rendering based on ray marching and FFT-based height map calculation. By following the setup instructions outlined in this document, you should be able to build and run OceanTracer on your system successfully.
