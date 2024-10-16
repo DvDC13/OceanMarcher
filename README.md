@@ -52,6 +52,3 @@ To set up OceanMarcher on your system, follow these steps:
 ![Drag Racing](./examples/day.png)
 ![Drag Racing](./examples/sunset.png)
 ![Drag Racing](./examples/night.png)
-
-## Conclusion
-OceanMarcher is a powerful tool for realistic ocean rendering based on ray marching and FFT-based height map calculation. By following the setup instructions outlined in this document, you should be able to build and run OceanMarcher on your system successfully.
